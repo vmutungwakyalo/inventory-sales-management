@@ -1,11 +1,23 @@
 # Inventory & Sales Management
 
-Local inventory and sales management system with:
+A full-stack inventory and sales platform for managing products, sales, payments, inventory movement, pricing history, and reporting.
 
-- `inventory-sales-management/`: React/Vite frontend and Express/Prisma backend.
-- `inventory-sales-desktop/`: Electron desktop shell and Windows installer configuration.
+## Stack
 
-## Web development
+- Frontend: React + Vite
+- Backend: Node.js + Express
+- Database: PostgreSQL + Prisma ORM
+- Desktop app: Electron + Windows installer packaging
+- Reporting: Server-side calculations with export support
+
+## Project structure
+
+- `inventory-sales-management/`: web app with the admin dashboard, sales flows, and API
+- `inventory-sales-desktop/`: Electron wrapper for Windows desktop distribution
+
+## Local development
+
+### Web app
 
 ```powershell
 cd inventory-sales-management
@@ -15,9 +27,7 @@ npm run dev
 
 Open `http://localhost:5174/`.
 
-## Desktop development
-
-Install the desktop dependencies, then start the Electron shell:
+### Desktop app
 
 ```powershell
 cd inventory-sales-desktop
@@ -25,21 +35,33 @@ npm install
 npm run dev
 ```
 
-## Build the Windows installer
+### Build installer
 
 ```powershell
 cd inventory-sales-desktop
 npm run dist
 ```
 
-The installer is created under `inventory-sales-desktop/desktop-dist/`.
+The packaged Windows installer is created under `inventory-sales-desktop/desktop-dist/`.
 
-## Database and secrets
+## Database and environment
 
-PostgreSQL is required locally. Keep database credentials, JWT secrets, production configuration, and database backups outside GitHub. The desktop app reads production configuration from:
+PostgreSQL is required locally. Keep database credentials, JWT secrets, production settings, and backups outside GitHub.
+
+The desktop app reads production settings from:
 
 ```text
 %APPDATA%\inventory-sales-desktop\production.env
 ```
 
-See [inventory-sales-desktop/INSTALL-NEW-COMPUTER.md](inventory-sales-desktop/INSTALL-NEW-COMPUTER.md) for transfer and restore instructions.
+See [inventory-sales-desktop/INSTALL-NEW-COMPUTER.md](inventory-sales-desktop/INSTALL-NEW-COMPUTER.md) for setup and restore instructions.
+
+## Highlights
+
+- Product and stock management
+- Historical price tracking
+- Inventory movement tracking
+- Sales variance and profit reporting
+- Exportable reports for CSV, Excel, and PDF
+- Multi-payment support including M-Pesa and card payments
+- Separate admin and sales-user workflows

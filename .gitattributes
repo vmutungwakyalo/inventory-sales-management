@@ -1,0 +1,12 @@
+# Reduce language noise from generated and vendor content
+**/dist/** linguist-generated=true
+**/desktop-dist/** linguist-generated=true
+**/node_modules/** linguist-generated=true
+**/package-lock.json linguist-generated=true
+**/*.svg linguist-detectable=false
+**/*.ico linguist-detectable=false
+
+# Treat docs as documentation rather than application code
+README.md linguist-documentation=true
+PROJECT-FILE-GUIDE.md linguist-documentation=true
+**/INSTALL-NEW-COMPUTER.md linguist-documentation=true

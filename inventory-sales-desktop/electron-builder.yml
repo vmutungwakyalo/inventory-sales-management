@@ -1,0 +1,34 @@
+appId: com.inventorysales.desktop
+productName: Inventory Sales Management
+icon: assets/inventory-icon.ico
+win:
+  signAndEditExecutable: false
+directories:
+  output: desktop-dist
+files:
+  - main.cjs
+  - package.json
+  - assets/inventory-icon.ico
+  - config/production.env.example
+extraResources:
+  - from: ../inventory-sales-management/frontend/dist
+    to: frontend/dist
+    filter:
+      - '**/*'
+  - from: ../inventory-sales-management/backend/src
+    to: backend/src
+    filter:
+      - '**/*'
+  - from: ../inventory-sales-management/backend/node_modules
+    to: backend/node_modules
+    filter:
+      - '**/*'
+  - from: ../inventory-sales-management/backend/package.json
+    to: backend/package.json
+  - from: config/production.env.example
+    to: config/production.env.example
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true

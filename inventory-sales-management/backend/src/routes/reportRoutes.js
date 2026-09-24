@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { salesReport, profitReport, stockAlerts, exportSales, exportProfit } from '../controllers/reportController.js';
+const router = Router();
+router.use(authenticate, authorize('ADMIN'));
+router.get('/sales', salesReport);
+router.get('/profit', profitReport);
+router.get('/stock-alerts', stockAlerts);
+router.get('/sales/export', exportSales);
+router.get('/profit/export', exportProfit);
+export default router;

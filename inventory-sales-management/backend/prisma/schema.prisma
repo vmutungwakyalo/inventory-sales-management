@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum MovementType {
+  STOCK_IN
+  STOCK_OUT
+}
+
+enum VarianceReason {
+  DISCOUNT
+  ERROR
+  NEGOTIATION
+  FRAUD
+  OTHER
+}
+
+enum PriceChangeType {
+  INITIAL
+  WHOLESALE
+  RETAIL
+  BOTH
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MPESA
+  AIRTEL_MONEY
+  BANK_TRANSFER
+  CHEQUE
+  CREDIT
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  username           String              @unique
+  email              String              @unique
+  passwordHash       String
+  role               Role                @default(USER)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  sales              Sale[]
+  inventoryMovements InventoryMovement[]
+  stockIns           StockIn[]
+  priceHistory       PriceHistory[]
+}
+
+model Product {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  sku               String              @unique
+  description       String?
+  wholesalePrice    Decimal             @db.Decimal(12, 2)
+  retailPrice       Decimal             @db.Decimal(12, 2)
+  openingStock      Int                 @default(0)
+  lowStockThreshold Int                 @default(0)
+  active             Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  sales             Sale[]
+  movements         InventoryMovement[]
+  stockIns           StockIn[]
+  priceHistory       PriceHistory[]
+
+  @@index([active, name])
+}
+
+model PriceHistory {
+  id                  Int             @id @default(autoincrement())
+  productId           Int
+  changedByUserId     Int
+  changeType          PriceChangeType
+  previousWholesale   Decimal         @db.Decimal(12, 2)
+  previousRetail      Decimal         @db.Decimal(12, 2)
+  newWholesale        Decimal         @db.Decimal(12, 2)
+  newRetail           Decimal         @db.Decimal(12, 2)
+  note                String?
+  createdAt           DateTime        @default(now())
+  product             Product         @relation(fields: [productId], references: [id])
+  changedBy           User            @relation(fields: [changedByUserId], references: [id])
+
+  @@index([productId, createdAt])
+}
+
+model Sale {
+  id                   Int            @id @default(autoincrement())
+  productId            Int
+  userId               Int
+  quantity             Int
+  wholesaleUnitPrice   Decimal        @db.Decimal(12, 2)
+  retailUnitPrice      Decimal        @db.Decimal(12, 2)
+  expectedTotal        Decimal        @db.Decimal(12, 2)
+  actualAmountPaid     Decimal        @db.Decimal(12, 2)
+  salesVariance        Decimal        @db.Decimal(12, 2)
+  varianceReason       VarianceReason?
+  varianceNote         String?
+  costOfGoodsSold      Decimal        @db.Decimal(12, 2)
+  grossProfit          Decimal        @db.Decimal(12, 2)
+  paymentMethod        PaymentMethod  @default(CASH)
+  mpesaReceiptNumber   String?
+  createdAt            DateTime       @default(now())
+  product              Product        @relation(fields: [productId], references: [id])
+  user                 User            @relation(fields: [userId], references: [id])
+  inventoryMovement    InventoryMovement?
+  payment              Payment?
+
+  @@index([createdAt])
+  @@index([productId, createdAt])
+  @@index([userId, createdAt])
+  @@index([varianceReason, createdAt])
+}
+
+model Payment {
+  id                   Int            @id @default(autoincrement())
+  checkoutRequestId    String?        @unique
+  merchantRequestId    String?
+  phoneNumber          String
+  amount               Decimal        @db.Decimal(12, 2)
+  productId            Int
+  userId               Int
+  quantity             Int
+  varianceReason       VarianceReason?
+  status               PaymentStatus  @default(PENDING)
+  resultCode           Int?
+  resultDescription    String?
+  mpesaReceiptNumber   String?
+  saleId               Int?           @unique
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  sale                 Sale?          @relation(fields: [saleId], references: [id])
+
+  @@index([status, createdAt])
+}
+
+model StockIn {
+  id                 Int        @id @default(autoincrement())
+  productId          Int
+  userId             Int
+  quantity           Int
+  wholesaleUnitPrice Decimal    @db.Decimal(12, 2)
+  retailUnitPrice    Decimal    @db.Decimal(12, 2)
+  note               String?
+  createdAt          DateTime   @default(now())
+  product            Product    @relation(fields: [productId], references: [id])
+  user               User       @relation(fields: [userId], references: [id])
+  inventoryMovement  InventoryMovement?
+
+  @@index([createdAt])
+}
+
+model InventoryMovement {
+  id                    Int          @id @default(autoincrement())
+  productId             Int
+  userId                Int
+  type                  MovementType
+  quantity              Int
+  stockBefore           Int
+  stockAfter            Int
+  wholesaleUnitPrice    Decimal      @db.Decimal(12, 2)
+  retailUnitPrice       Decimal      @db.Decimal(12, 2)
+  expectedRetailValue   Decimal      @db.Decimal(12, 2)
+  saleId                Int?         @unique
+  stockInId             Int?         @unique
+  createdAt             DateTime     @default(now())
+  product               Product      @relation(fields: [productId], references: [id])
+  user                  User         @relation(fields: [userId], references: [id])
+  sale                  Sale?        @relation(fields: [saleId], references: [id])
+  stockIn               StockIn?     @relation(fields: [stockInId], references: [id])
+
+  @@index([productId, createdAt])
+  @@index([type, createdAt])
+  @@index([userId, createdAt])
+}

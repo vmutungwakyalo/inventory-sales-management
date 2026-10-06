@@ -1,0 +1,21 @@
+{
+  "name": "inventory-sales-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Desktop application shell for Inventory & Sales Management",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "electron main.cjs --dev",
+    "build:web": "npm --prefix ../inventory-sales-management run build",
+    "build:icon": "node scripts/create-icon.cjs",
+    "start": "npm run build:web && electron main.cjs",
+    "dist": "npm run build:web && npm run build:icon && node build.cjs nsis",
+    "dist:portable": "npm run build:web && npm run build:icon && node build.cjs portable"
+  },
+  "devDependencies": {
+    "electron": "^38.2.1",
+    "electron-builder": "^26.0.12",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.4"
+  }
+}

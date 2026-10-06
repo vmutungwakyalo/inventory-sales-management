@@ -1,0 +1,23 @@
+# Dependencies
+**/node_modules/
+
+# Environment and local secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/production.env
+
+# Generated builds and installers
+**/dist/
+**/desktop-dist/
+**/coverage/
+
+# Database backups
+*.backup
+*.dump
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
